@@ -7,8 +7,8 @@ class preProcess:
         self.input = input
         self.target = target
         self.time = time
-        
-    def getDataSet(self):
+
+    def getDataSet(self, convert=False):
         # 1. read excel
         df = pd.read_excel(self.input)
 
@@ -51,13 +51,12 @@ class preProcess:
         # print(output_np)
 
         # optional (exchange odd, even)
-        '''
-        new_np = []
-        for n in range(0, len(output_np)):
-            new = np.concatenate((output_np[n][::2], output_np[n][1::2]), axis=0)
-            new_np.append(new)
-        new_np = np.array(new_np)
-        print(new_np)
-        '''
-
-        return output_np
+        if convert == True:
+            new_np = []
+            for n in range(0, len(output_np)):
+                new = np.concatenate((output_np[n][::2], output_np[n][1::2]), axis=0)
+                new_np.append(new)
+            new_np = np.array(new_np)
+            return new_np
+        else:
+            return output_np
