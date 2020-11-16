@@ -57,3 +57,13 @@ if __name__ == "__main__":
 
   # 7. result
   print(output_np)
+
+  # optional (exchange odd, even)
+  '''
+  new_np = []
+  for n in range(0, len(output_np)):
+      new = np.concatenate((output_np[n][::2], output_np[n][1::2]), axis=0)
+      new_np.append(new)
+  new_np = np.array(new_np)
+  print(new_np)
+  '''
