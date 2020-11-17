@@ -69,9 +69,9 @@ class PreProcess:
     def getDataSet(self):
         df = self.getDf()
         target_df = self.getTargetDf(df)
-        label_df = self.getLabelDf(target_df)
-        size_sr = self.getSizeSr(label_df)
-        target_df = self.shiftDf(label_df, size_sr)
+        label_df = self.getLabelDf(target_df) # diff
+        size_sr = self.getSizeSr(label_df) # diff
+        target_df = self.shiftDf(label_df, size_sr) # diff
         discard = self.getDiscard(target_df)
         output_df = self.sliceDf(target_df, discard)
         output_np = self.getNp(output_df)
