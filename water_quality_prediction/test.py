@@ -1,8 +1,8 @@
-from preProcess import preProcess
+from preProcess import PreProcess
 
 
 if __name__ == "__main__":
-    p = preProcess('./data/expand_mini.xlsx', [2,3], 3)
+    p = PreProcess('./data/expand_mini.xlsx', [2,3], 3)
 
     # sample (1)
     output_np = p.getDataSet(convert=False)

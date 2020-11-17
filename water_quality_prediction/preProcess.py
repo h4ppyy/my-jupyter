@@ -2,7 +2,7 @@ import pandas as pd
 import numpy as np
 
 
-class preProcess:
+class PreProcess:
     def __init__(self, input, target, time):
         self.input = input
         self.target = target
@@ -46,9 +46,6 @@ class preProcess:
         output_np = output_df.to_numpy()
         group_cnt = self.time * len(self.target)
         output_np = output_np.reshape(group_cnt, -1)
-
-        # 7. result
-        # print(output_np)
 
         # optional (exchange odd, even)
         if convert == True:
