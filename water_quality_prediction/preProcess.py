@@ -8,7 +8,7 @@ class PreProcess:
         self.target = target
         self.time = time
 
-    def getDataSet(self, convert=False):
+    def getDataSet(self):
         # 1. read excel
         df = pd.read_excel(self.input)
 
@@ -40,20 +40,33 @@ class PreProcess:
             for n in range(0, t['total_cnt']-self.time+1):
                 split_df = t['output_df'][n:self.time+n]
                 concat_list.append(split_df)
-        output_df = pd.concat(concat_list).drop('is_nan', axis=1).drop('group', axis=1)
+        origin_df = pd.concat(concat_list).drop('is_nan', axis=1).drop('group', axis=1)
+
+        # 6. slice
+        v = ( len(origin_df) * len(self.target) ) % ( len(self.target) * self.time )
+        output_df = origin_df[:len(origin_df) - int(v / len(self.target))]
+
+        # 7. dataframe to numpy  
+        output_np = output_df.to_numpy()
+        group_cnt = self.time * len(self.target)
+        output_np = output_np.reshape(-1, group_cnt)
+
+        return output_np
+
+    def getRawDataSet(self):
+        # 1. read excel
+        df = pd.read_excel(self.input)
+
+        # 2. search target column
+        origin_df = df.iloc[:, self.target]
+
+        # 3. slice
+        v = ( len(origin_df) * len(self.target) ) % ( len(self.target) * self.time )
+        output_df = origin_df[:len(origin_df) - int(v / len(self.target))]
 
         # 6. dataframe to numpy  
         output_np = output_df.to_numpy()
         group_cnt = self.time * len(self.target)
-        output_np = output_np.reshape(group_cnt, -1)
+        output_np = output_np.reshape(-1, group_cnt)
 
-        # optional (exchange odd, even)
-        if convert == True:
-            new_np = []
-            for n in range(0, len(output_np)):
-                new = np.concatenate((output_np[n][::2], output_np[n][1::2]), axis=0)
-                new_np.append(new)
-            new_np = np.array(new_np)
-            return new_np
-        else:
-            return output_np
+        return output_np

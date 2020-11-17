@@ -5,7 +5,7 @@ if __name__ == "__main__":
     p = PreProcess('./data/expand_mini.xlsx', [2,3], 3)
 
     # sample (1)
-    output_np = p.getDataSet(convert=False)
+    output_np = p.getDataSet()
     print(output_np)
     '''
     [[ 4. 24.  5. 25.  6. 26.]
@@ -16,14 +16,13 @@ if __name__ == "__main__":
     [11. 31. 12. 32. 13. 33.]]
     '''
 
-    # sample (2)
-    output_np = p.getDataSet(convert=True)
+    output_np = p.getRawDataSet()
     print(output_np)
     '''
-    [[ 4.  5.  6. 24. 25. 26.]
-    [ 5.  6.  7. 25. 26. 27.]
-    [ 6.  7.  8. 26. 27. 28.]
-    [ 9. 10. 11. 29. 30. 31.]
-    [10. 11. 12. 30. 31. 32.]
-    [11. 12. 13. 31. 32. 33.]]
+    [[ 2.8  6.8  2.8  6.8  nan  nan]
+    [ 2.7  6.8  nan  nan  1.  21. ]
+    [ 2.  22.   3.  23.   nan  nan]
+    [ 4.  24.   5.  25.   6.  26. ]
+    [ 7.  27.   8.  28.   nan  nan]
+    [ 9.  29.  10.  30.  11.  31. ]]
     '''
