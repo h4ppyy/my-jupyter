@@ -84,3 +84,7 @@ class PreProcess:
         output_df = self.sliceDf(target_df, discard)
         output_np = self.getNp(output_df)
         return output_np
+
+    def npToExcel(self, input_np, save_path):
+        df = pd.DataFrame(data=input_np)
+        df.to_excel(save_path, index=False)
