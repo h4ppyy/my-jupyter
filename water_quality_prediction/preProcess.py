@@ -7,66 +7,80 @@ class PreProcess:
         self.input = input
         self.target = target
         self.time = time
+        self.group_cnt = time * len(target)
+        self.df = pd.read_excel(input)
+        
+    def getInput(self):
+        return self.input
 
-    def getDataSet(self):
-        # 1. read excel
-        df = pd.read_excel(self.input)
+    def getTarget(self):
+        return self.target
 
-        # 2. search target column
-        origin_df = df.iloc[:, self.target]
+    def getTime(self):
+        return self.time
 
-        # 3. labeling for group
-        x = df.iloc[:, self.target].isna().any(axis='columns').astype(int)
-        y = df.iloc[:, self.target].isna().any(axis='columns').astype(int).shift(periods=1, fill_value=0)
+    def getDf(self):
+        return self.df
+
+    def getTargetDf(self, df):
+        return df.iloc[:, self.target]
+
+    def getLabelDf(self, target_df):
+        x = self.df.iloc[:, self.target].isna().any(axis='columns').astype(int)
+        y = self.df.iloc[:, self.target].isna().any(axis='columns').astype(int).shift(periods=1, fill_value=0)
         z = pd.concat([x, y], axis=1).any(axis='columns').astype(int).cumsum()
-        label_df = pd.concat([x, z], axis=1)
-        label_df.columns = ['is_nan', 'group']
-        new_df = pd.concat([origin_df, label_df], axis=1)
-        result_df = new_df.where(new_df['is_nan'] != 1).dropna()
+        raw_label_df = pd.concat([x, z], axis=1)
+        raw_label_df.columns = ['is_nan', 'group']
+        new_df = pd.concat([target_df, raw_label_df], axis=1)
+        label_df = new_df.where(new_df['is_nan'] != 1).dropna()
+        return label_df
 
-        # 4. get count of group
-        size_sr = result_df.groupby(result_df['group']).size()
-        size_sr.where(size_sr >= self.time+1).dropna()
+    def getSizeSr(self, label_df):
+        size_sr = label_df.groupby(label_df['group']).size()
+        size_sr = size_sr.where(size_sr >= self.time+1).dropna()
+        return size_sr
 
-        # 5. use the input time for expand data 
+    def getDiscard(self, target_df):
+        return ( len(target_df) * len(self.target) ) % ( self.group_cnt )
+
+    def sliceDf(self, target_df, discard):
+        return target_df[:len(target_df) - int(discard / len(self.target))]
+
+    def shiftDf(self, label_df, size_sr):
         target_idx_list = size_sr.where(size_sr >= self.time+1).dropna().index.tolist()
         target_df_list = []
         concat_list = []
         for idx in target_idx_list:
-            output_df = result_df.where(result_df['group'] == idx).dropna()
-            total_cnt = len(result_df.where(result_df['group'] == idx).dropna())
+            output_df = label_df.where(label_df['group'] == idx).dropna()
+            total_cnt = len(label_df.where(label_df['group'] == idx).dropna())
             target_df_list.append({ 'total_cnt': total_cnt, 'output_df': output_df })
         for t in target_df_list:
             for n in range(0, t['total_cnt']-self.time+1):
                 split_df = t['output_df'][n:self.time+n]
                 concat_list.append(split_df)
-        origin_df = pd.concat(concat_list).drop('is_nan', axis=1).drop('group', axis=1)
+        target_df = pd.concat(concat_list).drop('is_nan', axis=1).drop('group', axis=1)
+        return target_df
 
-        # 6. slice
-        v = ( len(origin_df) * len(self.target) ) % ( len(self.target) * self.time )
-        output_df = origin_df[:len(origin_df) - int(v / len(self.target))]
-
-        # 7. dataframe to numpy  
+    def getNp(self, output_df):
         output_np = output_df.to_numpy()
-        group_cnt = self.time * len(self.target)
-        output_np = output_np.reshape(-1, group_cnt)
+        output_np = output_np.reshape(-1, self.group_cnt)
+        return output_np
 
+    def getDataSet(self):
+        df = self.getDf()
+        target_df = self.getTargetDf(df)
+        label_df = self.getLabelDf(target_df)
+        size_sr = self.getSizeSr(label_df)
+        target_df = self.shiftDf(label_df, size_sr)
+        discard = self.getDiscard(target_df)
+        output_df = self.sliceDf(target_df, discard)
+        output_np = self.getNp(output_df)
         return output_np
 
     def getRawDataSet(self):
-        # 1. read excel
-        df = pd.read_excel(self.input)
-
-        # 2. search target column
-        origin_df = df.iloc[:, self.target]
-
-        # 3. slice
-        v = ( len(origin_df) * len(self.target) ) % ( len(self.target) * self.time )
-        output_df = origin_df[:len(origin_df) - int(v / len(self.target))]
-
-        # 6. dataframe to numpy  
-        output_np = output_df.to_numpy()
-        group_cnt = self.time * len(self.target)
-        output_np = output_np.reshape(-1, group_cnt)
-
+        df = self.getDf()
+        target_df = self.getTargetDf(df)
+        discard = self.getDiscard(target_df)
+        output_df = self.sliceDf(target_df, discard)
+        output_np = self.getNp(output_df)
         return output_np

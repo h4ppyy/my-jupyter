@@ -16,6 +16,7 @@ if __name__ == "__main__":
     [11. 31. 12. 32. 13. 33.]]
     '''
 
+    # sample (2)
     output_np = p.getRawDataSet()
     print(output_np)
     '''
