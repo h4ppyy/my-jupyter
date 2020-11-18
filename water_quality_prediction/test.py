@@ -2,7 +2,9 @@ from preProcess import PreProcess
 
 
 if __name__ == "__main__":
-    p = PreProcess('./data/expand_mini.xlsx', [2,3], 3)
+    # file_name = './data/Gapyeong_2019.xlsx'
+    file_name = './data/expand_mini.xlsx'
+    p = PreProcess(file_name, [2,3,4], 3)
 
     # sample (1)
     output_np = p.getDataSet()
@@ -16,16 +18,3 @@ if __name__ == "__main__":
     [11. 31. 12. 32. 13. 33.]]
     '''
     p.npToExcel(output_np, "./output/result_sample1.xlsx")
-
-    # sample (2)
-    output_np = p.getRawDataSet()
-    print(output_np)
-    '''
-    [[ 2.8  6.8  2.8  6.8  nan  nan]
-    [ 2.7  6.8  nan  nan  1.  21. ]
-    [ 2.  22.   3.  23.   nan  nan]
-    [ 4.  24.   5.  25.   6.  26. ]
-    [ 7.  27.   8.  28.   nan  nan]
-    [ 9.  29.  10.  30.  11.  31. ]]
-    '''
-    p.npToExcel(output_np, "./output/result_sample2.xlsx")

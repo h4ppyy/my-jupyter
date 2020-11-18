@@ -37,7 +37,7 @@ class PreProcess:
 
     def getSizeSr(self, label_df):
         size_sr = label_df.groupby(label_df['group']).size()
-        size_sr = size_sr.where(size_sr >= self.time+1).dropna()
+        size_sr = size_sr.where(size_sr >= self.time).dropna()
         return size_sr
 
     def getDiscard(self, target_df):
@@ -47,7 +47,7 @@ class PreProcess:
         return target_df[:len(target_df) - int(discard / len(self.target))]
 
     def shiftDf(self, label_df, size_sr):
-        target_idx_list = size_sr.where(size_sr >= self.time+1).dropna().index.tolist()
+        target_idx_list = size_sr.where(size_sr >= self.time).dropna().index.tolist()
         target_df_list = []
         concat_list = []
         for idx in target_idx_list:
