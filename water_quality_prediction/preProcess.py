@@ -3,12 +3,17 @@ import numpy as np
 
 
 class PreProcess:
-    def __init__(self, input, target, time):
+    def __init__(self, input, target, time, target_all):
+        df = pd.read_excel(input)
+        target_all_list = [n for n in range(1, df.columns.size)]
         self.input = input
-        self.target = target
-        self.time = time
-        self.group_cnt = time * len(target)
-        self.df = pd.read_excel(input)
+        self.time = time      
+        self.df = df
+        if target_all:
+            self.target = target_all_list
+        else:
+            self.target = target
+        self.group_cnt = time * len(self.target)
         
     def getInput(self):
         return self.input
@@ -57,6 +62,12 @@ class PreProcess:
             for n in range(0, t['total_cnt']-self.time+1):
                 split_df = t['output_df'][n:self.time+n]
                 concat_list.append(split_df)
+                
+        # validate
+        if len(concat_list) == 0:
+            print('[fail] no groups were created. reduce the time option')
+            exit(0)
+
         target_df = pd.concat(concat_list).drop('is_nan', axis=1).drop('group', axis=1)
         return target_df
 

@@ -4,7 +4,7 @@ from preProcess import PreProcess
 if __name__ == "__main__":
     # file_name = './data/Gapyeong_2019.xlsx'
     file_name = './data/expand_mini.xlsx'
-    p = PreProcess(file_name, [2,3,4], 3)
+    p = PreProcess(input=file_name, target=[2,3,4], time=2, target_all=True)
 
     # sample (1)
     output_np = p.getDataSet()
