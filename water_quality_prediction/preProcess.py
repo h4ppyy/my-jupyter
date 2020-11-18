@@ -37,7 +37,6 @@ class PreProcess:
 
     def getSizeSr(self, label_df):
         size_sr = label_df.groupby(label_df['group']).size()
-        size_sr = size_sr.where(size_sr >= self.time).dropna()
         return size_sr
 
     def getDiscard(self, target_df):
