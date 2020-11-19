@@ -41,8 +41,8 @@ class PreProcess:
         return df.iloc[:, self.target]
 
     def getLabelDf(self, target_df):
-        x = self.df.iloc[:, self.target].isna().any(axis='columns').astype(int)
-        y = self.df.iloc[:, self.target].isna().any(axis='columns').astype(int).shift(periods=1, fill_value=0)
+        x = target_df.isna().any(axis='columns').astype(int)
+        y = target_df.isna().any(axis='columns').astype(int).shift(periods=1, fill_value=0)
         z = pd.concat([x, y], axis=1).any(axis='columns').astype(int).cumsum()
         raw_label_df = pd.concat([x, z], axis=1)
         raw_label_df.columns = ['is_nan', 'group']
@@ -64,9 +64,16 @@ class PreProcess:
         target_idx_list = size_sr.where(size_sr >= self.time).dropna().index.tolist()
         target_df_list = []
         concat_list = []
+
+        print('group_cnt -> ', len(target_idx_list))
+        
         for idx in target_idx_list:
             output_df = label_df.where(label_df['group'] == idx).dropna()
             total_cnt = len(label_df.where(label_df['group'] == idx).dropna())
+
+            # debug
+            print('total_cnt -> ', total_cnt)
+
             target_df_list.append({ 'total_cnt': total_cnt, 'output_df': output_df })
         for t in target_df_list:
             for n in range(0, t['total_cnt']-self.time+1):
