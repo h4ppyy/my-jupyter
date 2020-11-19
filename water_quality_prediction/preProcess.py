@@ -94,6 +94,10 @@ class PreProcess:
         target_df = self.shiftDf(label_df, size_sr) # diff
         discard = self.getDiscard(target_df)
         output_df = self.sliceDf(target_df, discard)
+
+        # debug
+        # output_df.to_excel('./output/hello1.xlsx', index=False)
+        # return 1
         output_np = self.getNp(output_df)
         return output_np
 
