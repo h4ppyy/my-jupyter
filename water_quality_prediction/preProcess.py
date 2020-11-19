@@ -3,12 +3,13 @@ import numpy as np
 
 
 class PreProcess:
-    def __init__(self, input, target, time, target_all):
+    def __init__(self, input, target, time, target_all, fill_cnt=0):
         df = pd.read_excel(input)
-        target_all_list = [n for n in range(1, df.columns.size)]
+        target_all_list = [n for n in range(2, df.columns.size)]
         self.input = input
         self.time = time      
         self.df = df
+        self.fill_cnt = fill_cnt
         if target_all:
             self.target = target_all_list
         else:
@@ -28,6 +29,15 @@ class PreProcess:
         return self.df
 
     def getTargetDf(self, df):
+        # fill logic
+        if self.fill_cnt != 0:
+            mask = df.copy()
+            for i in df.columns: 
+                dfx = pd.DataFrame( df[i] )
+                dfx['new'] = ((dfx.notnull() != dfx.shift().notnull()).cumsum())
+                dfx['ones'] = 1
+                mask[i] = (dfx.groupby('new')['ones'].transform('count') < self.fill_cnt + 1) | df[i].notnull()
+            df = df.interpolate().bfill()[mask]
         return df.iloc[:, self.target]
 
     def getLabelDf(self, target_df):
