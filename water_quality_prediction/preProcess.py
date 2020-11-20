@@ -40,8 +40,8 @@ class PreProcess:
             df = df.interpolate().bfill()[mask]
 
         # debug
-        print(df)
-        df.to_excel('./output/의암호2019_raw_fill_10000.xlsx', index=False)
+        # print(df)
+        # df.to_excel('./output/의암호2019_raw_fill_10000.xlsx', index=False)
         return df.iloc[:, self.target]
 
     def getLabelDf(self, target_df):
@@ -69,6 +69,7 @@ class PreProcess:
         target_df_list = []
         concat_list = []
 
+        # debug
         print('group_cnt -> ', len(target_idx_list))
         
         for idx in target_idx_list:
@@ -109,6 +110,7 @@ class PreProcess:
         # debug
         # output_df.to_excel('./output/hello1.xlsx', index=False)
         # return 1
+        
         output_np = self.getNp(output_df)
         return output_np
 
