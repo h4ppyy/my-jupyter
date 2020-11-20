@@ -38,6 +38,10 @@ class PreProcess:
                 dfx['ones'] = 1
                 mask[i] = (dfx.groupby('new')['ones'].transform('count') < self.fill_cnt + 1) | df[i].notnull()
             df = df.interpolate().bfill()[mask]
+
+        # debug
+        print(df)
+        df.to_excel('./output/의암호2019_raw_fill_10000.xlsx', index=False)
         return df.iloc[:, self.target]
 
     def getLabelDf(self, target_df):
