@@ -41,7 +41,7 @@ class PreProcess:
 
         # debug
         # print(df)
-        # df.to_excel('./output/가평2019_raw_23456789_168_fill_10000.xlsx', index=False)
+        # df.to_excel('./output/가평2019_raw_2_5_fill_10000.xlsx', index=False)
         return df.iloc[:, self.target]
 
     def getLabelDf(self, target_df):
@@ -108,7 +108,7 @@ class PreProcess:
         output_df = self.sliceDf(target_df, discard)
 
         # debug
-        # output_df.to_excel('./output/hello1.xlsx', index=False)
+        # output_df.to_excel('./output/가평2019_23456789_168_fill_3.xlsx', index=False)
         # return 1
 
         output_np = self.getNp(output_df)
@@ -116,8 +116,8 @@ class PreProcess:
 
     def getRawDataSet(self):
         df = self.getDf()
-        # target_df = self.getTargetDf(df, fill_disabled=True)
-        target_df = self.getTargetDf(df, fill_disabled=False)
+        target_df = self.getTargetDf(df, fill_disabled=True)
+        # target_df = self.getTargetDf(df, fill_disabled=False)
         discard = self.getDiscard(target_df)
         output_df = self.sliceDf(target_df, discard)
         output_np = self.getNp(output_df)
