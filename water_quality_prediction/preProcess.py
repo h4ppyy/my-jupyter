@@ -16,25 +16,30 @@ class PreProcess:
         if len(file_list) == 0:
             df = pd.read_excel(input)
             fill_df = self.getFillDf(df)
+            min_size = fill_df.columns.size
 
         # directory
         else:
             dn = pd.DataFrame(data={'line': ['0']}) # null padding
             df_list = []
+            min_size = 999
             for f in file_list:
                 df = pd.read_excel(f)
                 self.df_raw_list.append(self.getFillDf(df))
                 df_list.append(self.getFillDf(df))
                 df_list.append(dn)
+                if min_size > df.columns.size:
+                    min_size = df.columns.size
             fill_df = pd.concat(df_list).drop('line', axis=1)
 
         # get all column name list (except 0, 1)
-        target_all_list = [n for n in range(2, fill_df.columns.size)]
+        target_all_list = [n for n in range(2, min_size)]
         print('[debug] target_all_list = ', target_all_list)
+        print('[debug] min_size = ', min_size)
              
         if target_all:
             self.target = target_all_list
-            self.target_name = fill_df.columns.tolist()[2:]
+            self.target_name = fill_df.columns.tolist()[2:min_size]
         else:
             self.target = target
             self.target_name = []
