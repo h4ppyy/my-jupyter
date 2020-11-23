@@ -31,6 +31,12 @@ if __name__ == "__main__":
     p.npToExcel(output_np, "./output/raw.xlsx")
     '''
 
+    # make reverse raw data (file)
+    '''
+    output_np = p.reverseReShape(output_np)
+    p.npToExcel(output_np, "./output/raw_reverse.xlsx", timeFormat=True)
+    '''
+    
     # test ground
     output_np = p.getRawDataSet()
     print(output_np)
