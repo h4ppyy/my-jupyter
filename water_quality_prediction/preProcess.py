@@ -97,14 +97,14 @@ class PreProcess:
         concat_list = []
 
         # debug
-        print('group_cnt -> ', len(target_idx_list))
+        print('[debug] group_cnt = ', len(target_idx_list))
         
         for idx in target_idx_list:
             output_df = label_df.where(label_df['group'] == idx).dropna()
             total_cnt = len(label_df.where(label_df['group'] == idx).dropna())
 
             # debug
-            print('total_cnt -> ', total_cnt)
+            print('[debug] total_cnt = ', total_cnt)
 
             target_df_list.append({ 'total_cnt': total_cnt, 'output_df': output_df })
         for t in target_df_list:
@@ -154,7 +154,6 @@ class PreProcess:
                 output_np_list.append(output_np)
             return output_np_list
         
-
     def npToExcel(self, input_np, save_path):
         df = pd.DataFrame(data=input_np)
         df.to_excel(save_path, index=False)
