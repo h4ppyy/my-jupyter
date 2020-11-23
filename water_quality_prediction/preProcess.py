@@ -154,7 +154,7 @@ class PreProcess:
                 output_np = self.getNp(output_df)
                 output_np_list.append(output_np)
             return output_np_list
-        
+
     def npToExcel(self, input_np, save_path, timeFormat=False):
         df = pd.DataFrame(data=input_np)
 

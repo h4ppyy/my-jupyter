@@ -22,6 +22,8 @@ if __name__ == "__main__":
     idx = 1
     for output_np in output_np_list:
         p.npToExcel(output_np, "./output/raw_{idx}.xlsx".format(idx=idx))
+        output_np = p.reverseReShape(output_np)
+        p.npToExcel(output_np, "./output/raw_reverse_{idx}.xlsx".format(idx=idx), timeFormat=True)
         idx += 1
     '''
 
@@ -36,7 +38,7 @@ if __name__ == "__main__":
     output_np = p.reverseReShape(output_np)
     p.npToExcel(output_np, "./output/raw_reverse.xlsx", timeFormat=True)
     '''
-    
+
     # test ground
     output_np = p.getRawDataSet()
     print(output_np)
