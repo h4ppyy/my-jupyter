@@ -17,14 +17,24 @@ if __name__ == "__main__":
     p.npToExcel(output_np, "./output/merge.xlsx")
 
     # make raw data (directory)
+    '''
     output_np_list = p.getRawDataSet()
     idx = 1
     for output_np in output_np_list:
         p.npToExcel(output_np, "./output/raw_{idx}.xlsx".format(idx=idx))
         idx += 1
+    '''
 
     # make raw data (file)
     '''
     output_np = p.getRawDataSet()
     p.npToExcel(output_np, "./output/raw.xlsx")
     '''
+
+    # test ground
+    output_np = p.getRawDataSet()
+    print(output_np)
+    p.npToExcel(output_np, "./output/raw.xlsx")
+    output_np = p.reverseReShape(output_np)
+    print(output_np)
+    p.npToExcel(output_np, "./output/raw_reverse.xlsx", timeFormat=True)

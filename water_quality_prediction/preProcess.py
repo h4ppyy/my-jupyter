@@ -1,4 +1,5 @@
 import glob
+import datetime
 import pandas as pd
 import numpy as np
 
@@ -154,6 +155,19 @@ class PreProcess:
                 output_np_list.append(output_np)
             return output_np_list
         
-    def npToExcel(self, input_np, save_path):
+    def npToExcel(self, input_np, save_path, timeFormat=False):
         df = pd.DataFrame(data=input_np)
+
+        if timeFormat:
+            hour_add = datetime.timedelta(hours = 1)
+            target = datetime.datetime(2020, 1, 1, 0, 0) - hour_add
+            date_list = []
+            for day in range(0, len(df)):
+                target = (target + hour_add)
+                date_list.append(target.strftime("%m.%d %H:%S"))
+            df.insert(loc=0, column='date', value=date_list)
+
         df.to_excel(save_path, index=False)
+
+    def reverseReShape(self, input_np):
+        return input_np.reshape(-1, len(self.target))
