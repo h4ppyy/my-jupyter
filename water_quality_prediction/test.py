@@ -11,16 +11,16 @@ if __name__ == "__main__":
         fill_cnt=10000
     )
 
-    # sample (1)
     # output_np = p.getDataSet()
     # p.npToExcel(output_np, "./output/가평2019_2_5_fill_3_shape.xlsx")
 
     # output_np = p.getRawDataSet()
     # p.npToExcel(output_np, "./output/가평2019_raw_2_5_fill_0_shape.xlsx")
 
-    # output_np = p.getDataSet()
-    # line 44
+    # output_np = p.getRawDataSet()
+    # line 43 (use)
+    # df.to_excel('./output/가평2019_raw_2_5_fill_10000.xlsx', index=False)
 
     # output_np = p.getRawDataSet()
-    # line 120
+    # line 114 (use)
     # p.npToExcel(output_np, "./output/가평2019_raw_2_5_fill_10000_shape.xlsx")

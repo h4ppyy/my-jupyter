@@ -40,7 +40,6 @@ class PreProcess:
             df = df.interpolate().bfill()[mask]
 
         # debug
-        # print(df)
         # df.to_excel('./output/가평2019_raw_2_5_fill_10000.xlsx', index=False)
         return df.iloc[:, self.target]
 
@@ -106,11 +105,6 @@ class PreProcess:
         target_df = self.shiftDf(label_df, size_sr) # diff
         discard = self.getDiscard(target_df)
         output_df = self.sliceDf(target_df, discard)
-
-        # debug
-        # output_df.to_excel('./output/가평2019_23456789_168_fill_3.xlsx', index=False)
-        # return 1
-
         output_np = self.getNp(output_df)
         return output_np
 
