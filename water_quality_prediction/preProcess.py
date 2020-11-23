@@ -5,36 +5,66 @@ import numpy as np
 
 class PreProcess:
     def __init__(self, input, target, time, target_all, fill_cnt=0):
-        df = pd.read_excel(input)
-        target_all_list = [n for n in range(2, df.columns.size)]
-        self.input = input
-        self.time = time      
-        self.df = df
         self.fill_cnt = fill_cnt
+        self.time = time
+        self.df_raw_list = []
+
+        file_list = glob.glob(input + "/*.xlsx")
+        print('[debug] len(file_list) = ', len(file_list))
+        
+        # file
+        if len(file_list) == 0:
+            df = pd.read_excel(input)
+            fill_df = self.getFillDf(df)
+
+        # directory
+        else:
+            dn = pd.DataFrame(data={'line': ['0']}) # null padding
+            df_list = []
+            for f in file_list:
+                df = pd.read_excel(f)
+                self.df_raw_list.append(self.getFillDf(df))
+                df_list.append(self.getFillDf(df))
+                df_list.append(dn)
+            fill_df = pd.concat(df_list).drop('line', axis=1)
+
+        # get all column name list (except 0, 1)
+        target_all_list = [n for n in range(2, fill_df.columns.size)]
+        print('[debug] target_all_list = ', target_all_list)
+             
         if target_all:
             self.target = target_all_list
+            self.target_name = fill_df.columns.tolist()[2:]
         else:
             self.target = target
-        self.group_cnt = time * len(self.target)
+            self.target_name = []
+            for t in target:
+                self.target_name.append(fill_df.columns.tolist()[t])
+
+        print('[debug] self.target = ', self.target)
+
+        self.group_cnt = self.time * len(self.target)
+        print('[debug] self.group_cnt = ', self.group_cnt)
+
+        self.target_df = self.getTargetDf(fill_df)
+        print('[debug] self.target_df = ', self.target_df)
 
     def getFillDf(self, df):
-        mask = df.copy()
-        for i in df.columns: 
-            dfx = pd.DataFrame( df[i] )
-            dfx['new'] = ((dfx.notnull() != dfx.shift().notnull()).cumsum())
-            dfx['ones'] = 1
-            mask[i] = (dfx.groupby('new')['ones'].transform('count') < self.fill_cnt + 1) | df[i].notnull()
-        df = df.interpolate().bfill()[mask]
-        return df
+        if self.fill_cnt != 0:
+            mask = df.copy()
+            for i in df.columns: 
+                dfx = pd.DataFrame( df[i] )
+                dfx['new'] = ((dfx.notnull() != dfx.shift().notnull()).cumsum())
+                dfx['ones'] = 1
+                mask[i] = (dfx.groupby('new')['ones'].transform('count') < self.fill_cnt + 1) | df[i].notnull()
+            df = df.interpolate().bfill()[mask]
+        return df 
 
-    def getTargetDf(self, df, fill_disabled=False):
-        # fill logic
-        if self.fill_cnt != 0 and fill_disabled == False:
-            df = self.getFillDf(df)
-
-        # debug
-        # df.to_excel('./output/가평2019_raw_2_5_fill_10000.xlsx', index=False)
+    def getTargetDf(self, df):
         return df.iloc[:, self.target]
+
+    def getRelTargetDf(self, df):
+        return df.loc[:, self.target_name]
 
     def getLabelDf(self, target_df):
         x = target_df.isna().any(axis='columns').astype(int)
@@ -91,9 +121,7 @@ class PreProcess:
         return output_np
 
     def getDataSet(self):
-        df = self.getDf()
-        target_df = self.getTargetDf(df)
-        label_df = self.getLabelDf(target_df) # diff
+        label_df = self.getLabelDf(self.target_df) # diff
         size_sr = self.getSizeSr(label_df) # diff
         target_df = self.shiftDf(label_df, size_sr) # diff
         discard = self.getDiscard(target_df)
@@ -102,13 +130,25 @@ class PreProcess:
         return output_np
 
     def getRawDataSet(self):
-        df = self.getDf()
-        target_df = self.getTargetDf(df, fill_disabled=True)
-        # target_df = self.getTargetDf(df, fill_disabled=False)
-        discard = self.getDiscard(target_df)
-        output_df = self.sliceDf(target_df, discard)
-        output_np = self.getNp(output_df)
-        return output_np
+        # file
+        if len(self.df_raw_list) == 0:
+            target_df = self.target_df
+            discard = self.getDiscard(target_df)
+            output_df = self.sliceDf(target_df, discard)
+            output_np = self.getNp(output_df)
+            return output_np
+
+        # directory
+        else:
+            output_np_list = []
+            for fill_df in self.df_raw_list:
+                target_df = self.getRelTargetDf(fill_df)
+                discard = self.getDiscard(target_df)
+                output_df = self.sliceDf(target_df, discard)
+                output_np = self.getNp(output_df)
+                output_np_list.append(output_np)
+            return output_np_list
+        
 
     def npToExcel(self, input_np, save_path):
         df = pd.DataFrame(data=input_np)
